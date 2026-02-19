@@ -1,0 +1,125 @@
+/* Reset básico consistente */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Variables de color (te permite escalar después) */
+:root {
+    --bg-dark: #020617;
+    --bg-mid: #0f172a;
+    --text-main: #e5e7eb;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --border-subtle: rgba(255,255,255,0.06);
+}
+
+/* Fondo general */
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    color: var(--text-main);
+    min-height: 100vh;
+
+    background:
+        radial-gradient(circle at 20% 20%, rgba(59,130,246,0.15), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(16,185,129,0.10), transparent 40%),
+        linear-gradient(180deg, var(--bg-dark), var(--bg-mid));
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor central (esto es CLAVE en UI real) */
+main {
+    width: min(1100px, 92%);
+    margin: 0 auto;
+    flex: 1;
+}
+
+/* Header más limpio */
+header {
+    padding: 40px 0 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* Caja de contenido tipo "card SaaS" */
+.section {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 30px;
+}
+
+/* Botón primario */
+button {
+    padding: 14px 22px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--accent);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+/* Interacción */
+button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+/* Tabla estilo app moderna */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95rem;
+}
+
+thead {
+    color: var(--text-muted);
+    text-align: left;
+}
+
+th {
+    font-weight: 500;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+td {
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Hover fila */
+tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+    transition: background 0.15s ease;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    overflow-x: auto;
+}

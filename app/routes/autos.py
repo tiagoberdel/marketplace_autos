@@ -1,76 +1,70 @@
 from flask import Blueprint, request, jsonify, HTTPException
 from app.models.auto import Auto, db
+from app.utils.validators import validar_auto
+from app.services.autos_services import crear_auto, listar_autos, obtener_auto_por_id, eliminar_auto_por_id, actualizar_auto
 
 autos_bp = Blueprint("autos", __name__, url_prefix="/autos")
+
+# /POST auto
 
 @autos_bp.route("/", methods=["POST"])
 def agregar_auto():
     data = request.get_json()
 
-    nuevo_auto = Auto(
-        marca=data["marca"],
-        modelo=data["modelo"],
-        year=data["year"],
-        precio=data["precio"]
-    )
+    es_valido, resultado = validar_auto(data)
 
-    db.session.add(nuevo_auto)
-    db.session.commit()
+    if not es_valido:
+        return jsonify({"error": resultado}), 400
 
-    return jsonify({"mensaje": "Auto creado con éxito"}), 201
+    auto_creado = crear_auto(resultado)
+
+    return jsonify({
+        "mensaje": "Auto creado con éxito",
+        "id": auto_creado.id
+    }), 201
+
+# / GET autos
 
 @autos_bp.route("/", methods=["GET"])
 def obtener_autos():
-    autos = Auto.query.all()
+    autos = listar_autos()
+    return jsonify(autos), 200
 
-    resultado = []
-    for auto in autos:
-        resultado.append({
-            "id": auto.id,
-            "marca": auto.marca,
-            "modelo": auto.modelo,
-            "año": auto.year,
-            "precio": auto.precio
-        })
-
-    return jsonify(resultado), 200
+# / GET auto
 
 @autos_bp.route("/<id>", methods=["GET"])
 def obtener_auto(id):
-    auto = Auto.query.get(id)
+    auto = obtener_auto_por_id(id)
+
     if not auto:
-        return {"mensaje": "Auto con la id f{id} no encontrado"}, 404
-    
-    resultado = {
-        "id": auto.id,
-        "marca": auto.marca,
-        "modelo": auto.modelo,
-        "año": auto.year,
-        "precio": auto.precio
-    }
-    return jsonify(resultado), 200 
+        return {"mensaje": f"Auto con id {id} no encontrado"}, 404
+
+    return jsonify(auto.to_dict()), 200
+
+# / DELETE auto
 
 @autos_bp.route("/<id>", methods=["DELETE"])
 def eliminar_auto(id):
-    auto = Auto.query.get(id)
+    auto = eliminar_auto_por_id(id)
+
     if not auto:
-        return {"mensaje": f"Auto con la id {id} no encontrado"}, 404
-    
-    db.session.delete(auto)
-    db.session.commit()
-    return {"mensaje": f"Auto con el id {id} eliminado con exito"}, 200
+        return {"mensaje": f"Auto con id {id} no encontrado"}, 404
+
+    return {"mensaje": f"Auto con id {id} eliminado con éxito"}, 200
+
+# / PUT auto
 
 @autos_bp.route("/<id>", methods=["PUT"])
 def editar_auto(id):
     data = request.get_json()
-    auto = Auto.query.get(id)
+
+    es_valido, resultado = validar_auto(data)
+    if not es_valido:
+        return jsonify({"error": resultado}), 400
+
+    auto = actualizar_auto(id, resultado)
+
     if not auto:
-        return {"mensaje": f"Auto con la id {id} no encontrado"}, 404
-    elif not data:
-        return {"mensaje": "Faltan datos para modificar"}, 400
-    auto.marca= data["marca"]
-    auto.modelo= data["modelo"]
-    auto.year= data["year"]
-    auto.precio= data["precio"]
-    db.session.commit()
+        return {"mensaje": f"Auto con id {id} no encontrado"}, 404
+
     return {"mensaje": f"Auto con id {id} modificado con éxito"}, 200

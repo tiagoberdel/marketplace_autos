@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, HTTPException
+from flask import Blueprint, request, jsonify
 from app.models.auto import Auto, db
 from app.utils.validators import validar_auto
 from app.services.autos_services import crear_auto, listar_autos, obtener_auto_por_id, eliminar_auto_por_id, actualizar_auto
